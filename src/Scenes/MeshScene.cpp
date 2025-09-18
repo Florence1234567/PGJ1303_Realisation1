@@ -13,18 +13,18 @@ namespace
 	{
 		glm::vec3 position;
 		glm::vec3 normal;
-		glm::vec2 texcoord; // UV
-		glm::vec3 tangent; // for normal map
-		glm::vec3 bitangent; // for normal map
+		//glm::vec2 texcoord; // UV
+		//glm::vec3 tangent; // for normal map
+		//glm::vec3 bitangent; // for normal map
 	};
 
 	enum VERTEX_ATTRIBUTES
 	{
 		POSITION,
 		NORMAL,
-		TEXCOORD,
-		TANGENT,
-		BITANGENT,
+		//TEXCOORD,
+		//TANGENT,
+		//BITANGENT,
 	};
 }
 
@@ -54,9 +54,9 @@ CMeshScene::CMeshScene()
 		vertices.push_back({
 			{position.x, position.y, position.z}, 
 			{normal.x, normal.y, normal.z},
-			{texcoord.x, texcoord.y},
-		    {tangent.x, tangent.y, tangent.z},
-		    {bitangent.x, bitangent.y, bitangent.z}
+			//{texcoord.x, texcoord.y},
+			//{tangent.x, tangent.y, tangent.z},
+			//{bitangent.x, bitangent.y, bitangent.z}
 			
 			});
 	}
@@ -130,15 +130,14 @@ CMeshScene::CMeshScene()
 		glEnableVertexAttribArray(VERTEX_ATTRIBUTES::NORMAL);
 		glVertexAttribPointer(VERTEX_ATTRIBUTES::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, normal)));
 
-		glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TEXCOORD);
-		glVertexAttribPointer(VERTEX_ATTRIBUTES::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, texcoord)));
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TEXCOORD);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, texcoord)));
 
-		glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TANGENT);
-		glVertexAttribPointer(VERTEX_ATTRIBUTES::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, tangent)));
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TANGENT);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, tangent)));
 
-		glEnableVertexAttribArray(VERTEX_ATTRIBUTES::BITANGENT);
-		glVertexAttribPointer(VERTEX_ATTRIBUTES::BITANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, bitangent)));
-
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::BITANGENT);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::BITANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, bitangent)));
 
 		glBindVertexArray(0);
 	}
