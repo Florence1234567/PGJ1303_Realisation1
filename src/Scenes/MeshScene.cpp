@@ -13,20 +13,30 @@ namespace
 	{
 		glm::vec3 position;
 		glm::vec3 normal;
+		//glm::vec2 texcoord; // UV
+		//glm::vec3 tangent; // for normal map
+		//glm::vec3 bitangent; // for normal map
 	};
 
 	enum VERTEX_ATTRIBUTES
 	{
 		POSITION,
 		NORMAL,
+		//TEXCOORD,
+		//TANGENT,
+		//BITANGENT,
 	};
 }
 
 CMeshScene::CMeshScene()
 {
 	Assimp::Importer importer;
-	importer.ReadFile("./models/bunny.obj", aiProcess_Triangulate | aiProcess_GenSmoothNormals);
-	auto scene = importer.GetScene();
+	const aiScene* scene = importer.ReadFile("./resources/models/teapot.dae", 
+		aiProcess_Triangulate | 
+		aiProcess_GenSmoothNormals |
+		aiProcess_FlipUVs |
+		aiProcess_CalcTangentSpace);
+
 	assert(scene->HasMeshes());
 	auto mesh = scene->mMeshes[0];
 	assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
@@ -37,10 +47,21 @@ CMeshScene::CMeshScene()
 	{
 		auto position = mesh->mVertices[i];
 		auto normal = mesh->mNormals[i];
-		vertices.push_back({{position.x, position.y, position.z}, {normal.x, normal.y, normal.z}});
+		auto texcoord = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][i] : aiVector3D(0, 0, 0);
+		auto tangent = mesh->mTangents ? mesh->mTangents[i] : aiVector3D(0, 0, 0);
+		auto bitangent = mesh->mBitangents ? mesh->mBitangents[i] : aiVector3D(0, 0, 0);
+
+		vertices.push_back({
+			{position.x, position.y, position.z}, 
+			{normal.x, normal.y, normal.z},
+			//{texcoord.x, texcoord.y},
+			//{tangent.x, tangent.y, tangent.z},
+			//{bitangent.x, bitangent.y, bitangent.z}
+			
+			});
 	}
 
-	std::vector<uint16_t> indices;
+	std::vector<uint32_t> indices;
 	indices.reserve(mesh->mNumFaces * 3);
 	for(int i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -63,7 +84,7 @@ CMeshScene::CMeshScene()
 	{
 		m_indexBuffer = OpenGl::CBuffer::Create();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
 	}
 
 	{
@@ -86,6 +107,9 @@ CMeshScene::CMeshScene()
 
 		glBindAttribLocation(m_program, static_cast<GLuint>(VERTEX_ATTRIBUTES::POSITION), "a_position");
 		glBindAttribLocation(m_program, static_cast<GLuint>(VERTEX_ATTRIBUTES::NORMAL), "a_normal");
+		// BIND TEXCOORD
+		// BIND TANGENT
+		// BIND BITANGENT
 
 		m_matricesUniformBinding = glGetUniformBlockIndex(m_program, "Matrices");
 		assert(m_matricesUniformBinding != GL_INVALID_INDEX);
@@ -106,6 +130,15 @@ CMeshScene::CMeshScene()
 		glEnableVertexAttribArray(VERTEX_ATTRIBUTES::NORMAL);
 		glVertexAttribPointer(VERTEX_ATTRIBUTES::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, normal)));
 
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TEXCOORD);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, texcoord)));
+
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::TANGENT);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, tangent)));
+
+		//glEnableVertexAttribArray(VERTEX_ATTRIBUTES::BITANGENT);
+		//glVertexAttribPointer(VERTEX_ATTRIBUTES::BITANGENT, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), reinterpret_cast<GLvoid*>(offsetof(VERTEX, bitangent)));
+
 		glBindVertexArray(0);
 	}
 }
@@ -117,8 +150,12 @@ void CMeshScene::Update(double dt)
 	float aspectRatio = static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
 
 	glm::mat4 projMat = glm::perspective(glm::pi<float>() * 0.25f, aspectRatio, 0.1f, 1000.f);
-	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5f));
-	glm::mat4 worldMat = glm::rotate(glm::mat4(1.0f), static_cast<float>(m_currentTime * 2), glm::vec3(0.5f, 1.0f, 0.5f));
+	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -200.0f));
+
+	// Model matrix: translate down a bit and rotate over time
+	glm::mat4 worldMat = glm::translate(glm::mat4(1.0f), -glm::vec3(0.0f, 50.0f, 0.0f));
+	worldMat = glm::rotate(worldMat, static_cast<float>(m_currentTime), glm::vec3(0, 1, 0));
+	worldMat = glm::scale(worldMat, glm::vec3(1.0f)); // adjust if needed
 
 	m_matrices.worldViewProjMatrix = projMat * viewMat * worldMat;
 
@@ -142,5 +179,5 @@ void CMeshScene::Draw()
 	glUseProgram(m_program);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBuffer);
 	glBindVertexArray(m_vertexArray);
-	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
 }

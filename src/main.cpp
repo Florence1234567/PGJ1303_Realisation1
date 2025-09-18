@@ -54,7 +54,7 @@ int main(int argc, const char** argv)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 
-	CCubeScene scene;
+	CMeshScene scene;
 	double lastTime = glfwGetTime();
 	while(!glfwWindowShouldClose(window))
 	{
