@@ -13,7 +13,7 @@ namespace
 	{
 		glm::vec3 position;
 		glm::vec3 normal;
-		//glm::vec2 texcoord; // UV
+		glm::vec2 texcoord; // UV
 		//glm::vec3 tangent; // for normal map
 		//glm::vec3 bitangent; // for normal map
 	};

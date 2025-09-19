@@ -31,8 +31,6 @@ target_include_directories(pgj1303 PUBLIC
 
 target_link_libraries(pgj1303 glfw glm glad assimp)
 
-target_include_directories(pgj1303 PRIVATE ./deps/assimp/include)
-
 # Copier shaders et resources dans le dossier build
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

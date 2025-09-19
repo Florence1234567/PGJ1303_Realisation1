@@ -1,9 +1,11 @@
 #include "OpenGlDef.h"
 #include <GLFW/glfw3.h>
 #include <cstdio>
+
 #include "TriangleScene.h"
 #include "CubeScene.h"
 #include "MeshScene.h"
+#include "MultipleObjectScene.h"
 
 
 void GlMessageCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam)
@@ -54,7 +56,9 @@ int main(int argc, const char** argv)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 
-	CMeshScene scene;
+	//CGenericScene scene;
+	CMultipleObjectScene scene;
+	//CCubeScene scene;
 	double lastTime = glfwGetTime();
 	while(!glfwWindowShouldClose(window))
 	{
