@@ -123,8 +123,10 @@ void CCubeScene::Update(double dt)
 	float aspectRatio = static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
 
 	glm::mat4 projMat = glm::perspective(glm::pi<float>() * 0.25f, aspectRatio, 0.1f, 1000.f);
-	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -200.f));
+	
 	glm::mat4 worldMat = glm::rotate(glm::mat4(1.0f), static_cast<float>(m_currentTime * 2), glm::vec3(0.5f, 1.0f, 0.5f));
+	worldMat = glm::scale(worldMat, glm::vec3(25.0f));
 
 	m_matrices.worldViewProjMatrix = projMat * viewMat * worldMat;
 
